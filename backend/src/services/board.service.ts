@@ -8,7 +8,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { db } from '../db/index.js';
 import { boards, columns, labels } from '../db/schema.js';
 import { NotFoundError } from '../utils/errors.js';
-import type { CreateBoardInput, UpdateBoardInput, CreateColumnInput, UpdateColumnInput } from '../validators/board.validator.js';
+import type {
+  CreateBoardInput,
+  UpdateBoardInput,
+  CreateColumnInput,
+  UpdateColumnInput,
+} from '../validators/board.validator.js';
 import type { CreateLabelInput } from '../validators/label.validator.js';
 import type { Board, Column, Label, BoardWithRelations } from '../types/entities.js';
 
@@ -143,9 +148,8 @@ export class BoardService {
     const existingColumns = await db.query.columns.findMany({
       where: eq(columns.boardId, boardId),
     });
-    const maxPosition = existingColumns.length > 0
-      ? Math.max(...existingColumns.map(c => c.position)) + 1
-      : 0;
+    const maxPosition =
+      existingColumns.length > 0 ? Math.max(...existingColumns.map((c) => c.position)) + 1 : 0;
 
     const columnId = uuidv4();
     await db.insert(columns).values({

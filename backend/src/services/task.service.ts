@@ -8,7 +8,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { db } from '../db/index.js';
 import { tasks, columns, taskLabels, labels } from '../db/schema.js';
 import { NotFoundError, AppError } from '../utils/errors.js';
-import type { CreateTaskInput, UpdateTaskInput, MoveTaskInput } from '../validators/task.validator.js';
+import type {
+  CreateTaskInput,
+  UpdateTaskInput,
+  MoveTaskInput,
+} from '../validators/task.validator.js';
 import type { TaskWithLabels } from '../types/entities.js';
 
 export class TaskService {
@@ -56,7 +60,11 @@ export class TaskService {
   /**
    * Create a new task
    */
-  async createTask(columnId: string, userId: string, input: CreateTaskInput): Promise<TaskWithLabels> {
+  async createTask(
+    columnId: string,
+    userId: string,
+    input: CreateTaskInput
+  ): Promise<TaskWithLabels> {
     const column = await this.verifyColumnAccess(columnId, userId);
     if (!column) {
       throw new NotFoundError('Column not found');
@@ -66,9 +74,8 @@ export class TaskService {
     const existingTasks = await db.query.tasks.findMany({
       where: eq(tasks.columnId, columnId),
     });
-    const maxPosition = existingTasks.length > 0
-      ? Math.max(...existingTasks.map(t => t.position)) + 1
-      : 0;
+    const maxPosition =
+      existingTasks.length > 0 ? Math.max(...existingTasks.map((t) => t.position)) + 1 : 0;
 
     const taskId = uuidv4();
     await db.insert(tasks).values({
@@ -99,7 +106,11 @@ export class TaskService {
   /**
    * Update a task
    */
-  async updateTask(taskId: string, userId: string, input: UpdateTaskInput): Promise<TaskWithLabels> {
+  async updateTask(
+    taskId: string,
+    userId: string,
+    input: UpdateTaskInput
+  ): Promise<TaskWithLabels> {
     const task = await this.verifyTaskAccess(taskId, userId);
     if (!task) {
       throw new NotFoundError('Task not found');
@@ -156,10 +167,13 @@ export class TaskService {
       throw new AppError('Cannot move task to a different board', 400);
     }
 
-    await db.update(tasks).set({
-      columnId: input.columnId,
-      position: input.position,
-    }).where(eq(tasks.id, taskId));
+    await db
+      .update(tasks)
+      .set({
+        columnId: input.columnId,
+        position: input.position,
+      })
+      .where(eq(tasks.id, taskId));
 
     return this.getTaskWithLabels(taskId);
   }

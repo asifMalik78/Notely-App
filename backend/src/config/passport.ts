@@ -24,10 +24,7 @@ export interface OAuthProfile {
 async function findOrCreateUser(profile: OAuthProfile) {
   // First check if user exists with this provider + providerId
   let user = await db.query.users.findFirst({
-    where: and(
-      eq(users.provider, profile.provider),
-      eq(users.providerId, profile.id)
-    ),
+    where: and(eq(users.provider, profile.provider), eq(users.providerId, profile.id)),
   });
 
   if (user) {
@@ -41,7 +38,8 @@ async function findOrCreateUser(profile: OAuthProfile) {
 
   if (user) {
     // Update existing user with OAuth provider info
-    await db.update(users)
+    await db
+      .update(users)
       .set({
         provider: profile.provider,
         providerId: profile.id,
@@ -127,7 +125,18 @@ if (env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET) {
         callbackURL: '/api/auth/github/callback',
         scope: ['user:email'],
       },
-      async (_accessToken: string, _refreshToken: string, profile: { id: string; username?: string; displayName?: string; emails?: { value: string }[]; photos?: { value: string }[] }, done: (error: Error | null, user?: Record<string, unknown>) => void) => {
+      async (
+        _accessToken: string,
+        _refreshToken: string,
+        profile: {
+          id: string;
+          username?: string;
+          displayName?: string;
+          emails?: { value: string }[];
+          photos?: { value: string }[];
+        },
+        done: (error: Error | null, user?: Record<string, unknown>) => void
+      ) => {
         try {
           const email = profile.emails?.[0]?.value || `${profile.username}@github.local`;
 

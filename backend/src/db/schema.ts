@@ -1,4 +1,12 @@
-import { mysqlTable, varchar, text, timestamp, int, mysqlEnum, primaryKey } from 'drizzle-orm/mysql-core';
+import {
+  mysqlTable,
+  varchar,
+  text,
+  timestamp,
+  int,
+  mysqlEnum,
+  primaryKey,
+} from 'drizzle-orm/mysql-core';
 import { relations } from 'drizzle-orm';
 
 export const users = mysqlTable('users', {
@@ -17,7 +25,9 @@ export const users = mysqlTable('users', {
 
 export const boards = mysqlTable('boards', {
   id: varchar('id', { length: 36 }).primaryKey(),
-  userId: varchar('user_id', { length: 36 }).notNull().references(() => users.id, { onDelete: 'cascade' }),
+  userId: varchar('user_id', { length: 36 })
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
   title: varchar('title', { length: 255 }).notNull(),
   description: text('description'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -26,7 +36,9 @@ export const boards = mysqlTable('boards', {
 
 export const columns = mysqlTable('columns', {
   id: varchar('id', { length: 36 }).primaryKey(),
-  boardId: varchar('board_id', { length: 36 }).notNull().references(() => boards.id, { onDelete: 'cascade' }),
+  boardId: varchar('board_id', { length: 36 })
+    .notNull()
+    .references(() => boards.id, { onDelete: 'cascade' }),
   title: varchar('title', { length: 255 }).notNull(),
   position: int('position').notNull().default(0),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -34,7 +46,9 @@ export const columns = mysqlTable('columns', {
 
 export const tasks = mysqlTable('tasks', {
   id: varchar('id', { length: 36 }).primaryKey(),
-  columnId: varchar('column_id', { length: 36 }).notNull().references(() => columns.id, { onDelete: 'cascade' }),
+  columnId: varchar('column_id', { length: 36 })
+    .notNull()
+    .references(() => columns.id, { onDelete: 'cascade' }),
   title: varchar('title', { length: 255 }).notNull(),
   description: text('description'),
   priority: mysqlEnum('priority', ['low', 'medium', 'high']).default('medium').notNull(),
@@ -46,18 +60,28 @@ export const tasks = mysqlTable('tasks', {
 
 export const labels = mysqlTable('labels', {
   id: varchar('id', { length: 36 }).primaryKey(),
-  boardId: varchar('board_id', { length: 36 }).notNull().references(() => boards.id, { onDelete: 'cascade' }),
+  boardId: varchar('board_id', { length: 36 })
+    .notNull()
+    .references(() => boards.id, { onDelete: 'cascade' }),
   name: varchar('name', { length: 100 }).notNull(),
   color: varchar('color', { length: 7 }).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
-export const taskLabels = mysqlTable('task_labels', {
-  taskId: varchar('task_id', { length: 36 }).notNull().references(() => tasks.id, { onDelete: 'cascade' }),
-  labelId: varchar('label_id', { length: 36 }).notNull().references(() => labels.id, { onDelete: 'cascade' }),
-}, (table) => ({
-  pk: primaryKey({ columns: [table.taskId, table.labelId] }),
-}));
+export const taskLabels = mysqlTable(
+  'task_labels',
+  {
+    taskId: varchar('task_id', { length: 36 })
+      .notNull()
+      .references(() => tasks.id, { onDelete: 'cascade' }),
+    labelId: varchar('label_id', { length: 36 })
+      .notNull()
+      .references(() => labels.id, { onDelete: 'cascade' }),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.taskId, table.labelId] }),
+  })
+);
 
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({

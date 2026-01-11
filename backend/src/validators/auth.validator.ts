@@ -7,8 +7,18 @@ import { VALIDATION } from '../config/constants.js';
 
 export const registerSchema = z.object({
   email: z.string().email('Invalid email format'),
-  password: z.string().min(VALIDATION.PASSWORD_MIN_LENGTH, `Password must be at least ${VALIDATION.PASSWORD_MIN_LENGTH} characters`),
-  name: z.string().min(VALIDATION.NAME_MIN_LENGTH, `Name must be at least ${VALIDATION.NAME_MIN_LENGTH} characters`),
+  password: z
+    .string()
+    .min(
+      VALIDATION.PASSWORD_MIN_LENGTH,
+      `Password must be at least ${VALIDATION.PASSWORD_MIN_LENGTH} characters`
+    ),
+  name: z
+    .string()
+    .min(
+      VALIDATION.NAME_MIN_LENGTH,
+      `Name must be at least ${VALIDATION.NAME_MIN_LENGTH} characters`
+    ),
 });
 
 export const loginSchema = z.object({

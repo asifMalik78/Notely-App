@@ -8,12 +8,7 @@ interface ErrorResponse {
   stack?: string;
 }
 
-export function errorHandler(
-  err: Error,
-  _req: Request,
-  res: Response,
-  _next: NextFunction
-): void {
+export function errorHandler(err: Error, _req: Request, res: Response, _next: NextFunction): void {
   console.error('Error:', err);
 
   // Handle Zod validation errors
@@ -52,9 +47,10 @@ export function errorHandler(
 
   // Handle unknown errors
   const response: ErrorResponse = {
-    error: process.env.NODE_ENV === 'production'
-      ? 'Internal server error'
-      : err.message || 'Internal server error',
+    error:
+      process.env.NODE_ENV === 'production'
+        ? 'Internal server error'
+        : err.message || 'Internal server error',
   };
 
   if (process.env.NODE_ENV === 'development') {

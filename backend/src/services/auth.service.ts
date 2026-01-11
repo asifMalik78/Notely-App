@@ -59,7 +59,17 @@ export class AuthService {
 
     const now = new Date();
     return {
-      user: { id: userId, email, name, avatarUrl: null, dob: null, description: null, provider: null, createdAt: now, updatedAt: now },
+      user: {
+        id: userId,
+        email,
+        name,
+        avatarUrl: null,
+        dob: null,
+        description: null,
+        provider: null,
+        createdAt: now,
+        updatedAt: now,
+      },
       tokens,
     };
   }
@@ -80,7 +90,9 @@ export class AuthService {
 
     // Check if user signed up via OAuth (no password)
     if (!user.password) {
-      throw new UnauthorizedError(`This account uses ${user.provider || 'OAuth'} login. Please sign in with ${user.provider || 'OAuth'}.`);
+      throw new UnauthorizedError(
+        `This account uses ${user.provider || 'OAuth'} login. Please sign in with ${user.provider || 'OAuth'}.`
+      );
     }
 
     const isValidPassword = await comparePassword(password, user.password);
@@ -150,7 +162,10 @@ export class AuthService {
   /**
    * Update user profile
    */
-  async updateProfile(userId: string, data: { name?: string; dob?: string; description?: string }): Promise<PublicUser> {
+  async updateProfile(
+    userId: string,
+    data: { name?: string; dob?: string; description?: string }
+  ): Promise<PublicUser> {
     const user = await db.query.users.findFirst({
       where: eq(users.id, userId),
     });

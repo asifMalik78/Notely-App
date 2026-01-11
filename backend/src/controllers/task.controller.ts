@@ -5,7 +5,11 @@
 
 import { Request, Response } from 'express';
 import { taskService } from '../services/task.service.js';
-import { createTaskSchema, updateTaskSchema, moveTaskSchema } from '../validators/task.validator.js';
+import {
+  createTaskSchema,
+  updateTaskSchema,
+  moveTaskSchema,
+} from '../validators/task.validator.js';
 import { ValidationError } from '../utils/errors.js';
 
 export class TaskController {

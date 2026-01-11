@@ -100,7 +100,11 @@ export class BoardController {
       throw new ValidationError('Invalid input', validation.error.errors);
     }
 
-    const column = await boardService.updateColumn(req.params.id, req.user!.userId, validation.data);
+    const column = await boardService.updateColumn(
+      req.params.id,
+      req.user!.userId,
+      validation.data
+    );
     res.json({ column });
   }
 
