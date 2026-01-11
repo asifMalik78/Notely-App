@@ -96,7 +96,7 @@ npm run dev
 ## Project Structure
 
 ```
-notels/
+notely/
 ├── backend/
 │   ├── docker-compose.yml
 │   ├── Dockerfile
