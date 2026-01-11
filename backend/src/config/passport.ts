@@ -127,7 +127,7 @@ if (env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET) {
         callbackURL: '/api/auth/github/callback',
         scope: ['user:email'],
       },
-      async (_accessToken: string, _refreshToken: string, profile: any, done: (error: Error | null, user?: any) => void) => {
+      async (_accessToken: string, _refreshToken: string, profile: { id: string; username?: string; displayName?: string; emails?: { value: string }[]; photos?: { value: string }[] }, done: (error: Error | null, user?: Record<string, unknown>) => void) => {
         try {
           const email = profile.emails?.[0]?.value || `${profile.username}@github.local`;
 

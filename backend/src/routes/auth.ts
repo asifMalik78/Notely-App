@@ -13,6 +13,11 @@ import { generateOAuthState, verifyOAuthState } from '../utils/oauth-state.js';
 import { COOKIE_MAX_AGE } from '../config/constants.js';
 import { isProduction, env } from '../config/env.js';
 
+interface OAuthUser {
+  id: string;
+  email: string;
+}
+
 const router = Router();
 
 const COOKIE_OPTIONS = {
@@ -53,7 +58,7 @@ if (env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET) {
     passport.authenticate('google', {
       session: false,
       failureRedirect: `${env.CLIENT_URL}/login?error=google_auth_failed`,
-    }, (err: Error | null, user: any) => {
+    }, (err: Error | null, user: OAuthUser) => {
       if (err || !user) {
         return res.redirect(`${env.CLIENT_URL}/login?error=google_auth_failed`);
       }
@@ -100,7 +105,7 @@ if (env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET) {
     passport.authenticate('github', {
       session: false,
       failureRedirect: `${env.CLIENT_URL}/login?error=github_auth_failed`,
-    }, (err: Error | null, user: any) => {
+    }, (err: Error | null, user: OAuthUser) => {
       if (err || !user) {
         return res.redirect(`${env.CLIENT_URL}/login?error=github_auth_failed`);
       }

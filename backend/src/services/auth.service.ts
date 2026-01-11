@@ -95,7 +95,9 @@ export class AuthService {
       refreshToken: generateRefreshToken(tokenPayload),
     };
 
-    const { password: _, providerId: __, ...publicUser } = user;
+    const { password: _password, providerId: _providerId, ...publicUser } = user;
+    void _password;
+    void _providerId;
     return {
       user: publicUser,
       tokens,
@@ -139,7 +141,9 @@ export class AuthService {
     }
 
     // Return user without password and providerId
-    const { password: _, providerId: __, ...publicUser } = user;
+    const { password: _password, providerId: _providerId, ...publicUser } = user;
+    void _password;
+    void _providerId;
     return publicUser as PublicUser;
   }
 
@@ -155,7 +159,7 @@ export class AuthService {
       throw new NotFoundError('User not found');
     }
 
-    const updateData: any = {};
+    const updateData: { name?: string; dob?: Date; description?: string | null } = {};
     if (data.name) updateData.name = data.name;
     if (data.dob) updateData.dob = new Date(data.dob);
     if (data.description !== undefined) updateData.description = data.description;
