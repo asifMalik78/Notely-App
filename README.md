@@ -1,4 +1,4 @@
-# Notels - Kanban Board Application
+# Notely - Kanban Board Application
 
 A modern, full-stack Kanban board application built with React, Express, and MySQL.
 
@@ -15,11 +15,14 @@ A modern, full-stack Kanban board application built with React, Express, and MyS
   - Create and manage multiple boards
   - Drag-and-drop columns and tasks
   - Task priorities (Low, Medium, High)
-  - Due dates and custom labels
+  - Due dates with shadcn calendar picker
+  - Custom labels with colors
 - **UI/UX**
   - Light/Dark mode toggle
+  - 10 color themes (Zinc, Rose, Blue, Green, Orange, Violet, Yellow, Cyan, Pink, Slate)
+  - Smooth theme transitions
   - Responsive design
-  - Smooth animations with Framer Motion
+  - Animations with Framer Motion
 
 ## Tech Stack
 
@@ -27,9 +30,11 @@ A modern, full-stack Kanban board application built with React, Express, and MyS
 - React 18 with TypeScript
 - Vite for build tooling
 - TailwindCSS for styling
+- Radix UI + shadcn-style components
 - Framer Motion for animations
 - @hello-pangea/dnd for drag-and-drop
 - React Router for navigation
+- react-day-picker for calendar
 
 ### Backend
 - Express with TypeScript
@@ -50,7 +55,7 @@ A modern, full-stack Kanban board application built with React, Express, and MyS
 1. Clone the repository:
 ```bash
 git clone <repo-url>
-cd notels
+cd notely
 ```
 
 2. Copy environment files:
@@ -62,16 +67,21 @@ cp frontend/.env.example frontend/.env
 3. Start backend (includes MySQL):
 ```bash
 cd backend
-docker compose up -d
+docker compose -f docker-compose.dev.yml up -d
 ```
 
-4. Start frontend:
+4. Wait for MySQL to initialize, then run migrations:
+```bash
+docker exec notely-backend-dev npm run db:push
+```
+
+5. Start frontend:
 ```bash
 cd frontend
-docker compose up -d
+docker compose -f docker-compose.dev.yml up -d
 ```
 
-5. Open your browser:
+6. Open your browser:
 ```
 http://localhost:5173
 ```
@@ -98,13 +108,15 @@ npm run dev
 ```
 notely/
 ├── backend/
-│   ├── docker-compose.yml
-│   ├── Dockerfile
+│   ├── docker-compose.dev.yml
+│   ├── docker-compose.prod.yml
+│   ├── Dockerfile.dev
+│   ├── Dockerfile.prod
 │   ├── src/
 │   │   ├── app.ts              # Express app config
 │   │   ├── server.ts           # Server startup
 │   │   ├── index.ts            # Entry point
-│   │   ├── config/             # Configuration
+│   │   ├── config/             # Configuration (env, passport)
 │   │   ├── controllers/        # Route controllers
 │   │   ├── db/                 # Database schema
 │   │   ├── middleware/         # Express middleware
@@ -114,11 +126,16 @@ notely/
 │   │   └── validators/         # Input validation
 │   └── drizzle.config.ts
 ├── frontend/
-│   ├── docker-compose.yml
-│   ├── Dockerfile
+│   ├── docker-compose.dev.yml
+│   ├── docker-compose.prod.yml
+│   ├── Dockerfile.dev
+│   ├── Dockerfile.prod
 │   ├── src/
 │   │   ├── components/         # UI components
-│   │   ├── context/            # React contexts
+│   │   │   ├── ui/             # Base components (Button, Calendar, etc.)
+│   │   │   ├── layout/         # Layout components (ThemePicker, etc.)
+│   │   │   └── board/          # Board-specific components
+│   │   ├── context/            # React contexts (Auth, Theme)
 │   │   ├── pages/              # Page components
 │   │   ├── services/           # API services
 │   │   └── types/              # TypeScript types
@@ -203,23 +220,24 @@ notely/
 ## Docker Commands
 
 ```bash
-# Start services
-cd backend && docker compose up -d
-cd frontend && docker compose up -d
+# Start development services
+cd backend && docker compose -f docker-compose.dev.yml up -d
+cd frontend && docker compose -f docker-compose.dev.yml up -d
 
 # View logs
-docker logs notels-backend -f
-docker logs notels-frontend -f
+docker logs notely-backend-dev -f
+docker logs notely-frontend-dev -f
 
 # Rebuild after package changes
-docker compose build --no-cache
-docker compose up -d
+docker compose -f docker-compose.dev.yml build --no-cache
+docker compose -f docker-compose.dev.yml up -d
 
 # Reset database
-cd backend && docker compose down -v && docker compose up -d
+cd backend && docker compose -f docker-compose.dev.yml down -v
+docker compose -f docker-compose.dev.yml up -d
 
 # Run database migrations
-docker exec notels-backend npm run db:push
+docker exec notely-backend-dev npm run db:push
 ```
 
 ## CI/CD
@@ -229,11 +247,11 @@ GitHub Actions pipelines for both frontend and backend:
 1. **Lint** - ESLint check
 2. **Typecheck** - TypeScript validation
 3. **Build** - Production build
-4. **Docker** - Build and push image (on main branch)
+4. **Docker** - Build and push image to Docker Hub (on main branch)
 
-### Required Secrets
+### Required GitHub Secrets
 - `DOCKER_USERNAME` - Docker Hub username
-- `DOCKER_PASSWORD` - Docker Hub password/token
+- `DOCKER_PASSWORD` - Docker Hub access token
 
 ## License
 

@@ -2,13 +2,15 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: notely-frontend
+      dockerfile: Dockerfile.dev
+    container_name: notely-frontend-dev
+    env_file:
+      - .env
     restart: unless-stopped
     ports:
       - "5173:5173"
-    environment:
-      VITE_API_URL: ${VITE_API_URL:-http://localhost:3001}
     volumes:
       - .:/app
       - /app/node_modules
+    stdin_open: true
+    tty: true

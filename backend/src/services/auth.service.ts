@@ -202,6 +202,17 @@ export class AuthService {
 
     return this.getCurrentUser(userId);
   }
+
+  /**
+   * Generate tokens for OAuth authenticated user
+   */
+  generateOAuthTokens(user: { id: string; email: string }): AuthTokens {
+    const tokenPayload = { userId: user.id, email: user.email };
+    return {
+      accessToken: generateAccessToken(tokenPayload),
+      refreshToken: generateRefreshToken(tokenPayload),
+    };
+  }
 }
 
 // Export singleton instance

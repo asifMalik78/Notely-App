@@ -1,7 +1,7 @@
 node_modules
 dist
 build
-.next
+.vite
 coverage
 *.min.js
 *.min.css

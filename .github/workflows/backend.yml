@@ -2,12 +2,12 @@ name: Backend CI/CD
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, staging]
     paths:
       - 'backend/**'
       - '.github/workflows/backend.yml'
   pull_request:
-    branches: [main, develop]
+    branches: [main, staging]
     paths:
       - 'backend/**'
       - '.github/workflows/backend.yml'
@@ -68,9 +68,10 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./backend
+          file: ./backend/Dockerfile.prod
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/notels-backend:latest
-            ${{ secrets.DOCKER_USERNAME }}/notels-backend:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/notely-backend:latest
+            ${{ secrets.DOCKER_USERNAME }}/notely-backend:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

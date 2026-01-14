@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Mail, Lock, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Button from '../components/ui/Button';
-import ThemeToggle from '../components/layout/ThemeToggle';
+import ThemePicker from '../components/layout/ThemePicker';
 import toast from 'react-hot-toast';
 import { authApi } from '../services/api';
 
@@ -89,9 +89,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center px-4 py-8">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
       <div className="absolute top-4 right-4">
-        <ThemeToggle />
+        <ThemePicker />
       </div>
 
       <motion.div
@@ -105,25 +105,25 @@ export default function LoginPage() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: 'spring', damping: 15, stiffness: 200, delay: 0.1 }}
-            className="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg"
+            className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg"
           >
-            <span className="text-white font-bold text-3xl">N</span>
+            <span className="text-primary-foreground font-bold text-3xl">N</span>
           </motion.div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Welcome back</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">Sign in to your Notels account</p>
+          <h1 className="text-2xl font-bold text-foreground">Welcome back</h1>
+          <p className="text-muted-foreground mt-1">Sign in to your Notely account</p>
         </div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700"
+          className="bg-card rounded-2xl shadow-xl p-8 border border-border"
         >
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="label">Email</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <input
                   type="email"
                   value={email}
@@ -138,7 +138,7 @@ export default function LoginPage() {
             <div>
               <label className="label">Password</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <input
                   type="password"
                   value={password}
@@ -162,10 +162,10 @@ export default function LoginPage() {
 
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300 dark:border-gray-600" />
+              <div className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="bg-white dark:bg-gray-800 px-2 text-gray-500 dark:text-gray-400">
+              <span className="bg-card px-2 text-muted-foreground">
                 Or continue with
               </span>
             </div>
@@ -175,7 +175,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={handleGoogleLogin}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors font-medium"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 border border-border rounded-lg bg-secondary text-secondary-foreground hover:bg-accent transition-colors font-medium"
             >
               <GoogleIcon />
               Google
@@ -183,7 +183,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={handleGitHubLogin}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors font-medium"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 border border-border rounded-lg bg-secondary text-secondary-foreground hover:bg-accent transition-colors font-medium"
             >
               <GitHubIcon />
               GitHub
@@ -191,11 +191,11 @@ export default function LoginPage() {
           </div>
 
           <div className="mt-6 text-center">
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-muted-foreground">
               Don&apos;t have an account?{' '}
               <Link
                 to="/register"
-                className="text-primary-600 dark:text-primary-400 font-medium hover:underline"
+                className="text-primary font-medium hover:underline"
               >
                 Sign up
               </Link>

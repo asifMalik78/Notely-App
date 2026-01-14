@@ -3,12 +3,14 @@
  * Handles HTTP requests for authentication
  */
 
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { authService } from '../services/auth.service.js';
 import { registerSchema, loginSchema } from '../validators/auth.validator.js';
 import { ValidationError, UnauthorizedError } from '../utils/errors.js';
 import { COOKIE_MAX_AGE } from '../config/constants.js';
-import { isProduction } from '../config/env.js';
+import { isProduction, env } from '../config/env.js';
+import passport from '../config/passport.js';
+import { generateOAuthState, verifyOAuthState } from '../utils/oauth-state.js';
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
@@ -144,6 +146,120 @@ export class AuthController {
     }
     const user = await authService.updateAvatar(req.user!.userId, avatarUrl);
     res.json({ user, message: 'Avatar updated successfully' });
+  }
+
+  /**
+   * GET /api/auth/google
+   * Initiate Google OAuth flow
+   */
+  googleAuth(req: Request, res: Response, next: NextFunction): void {
+    const state = generateOAuthState();
+    passport.authenticate('google', {
+      scope: ['profile', 'email'],
+      state,
+      session: false,
+    })(req, res, next);
+  }
+
+  /**
+   * GET /api/auth/google/callback
+   * Handle Google OAuth callback
+   */
+  googleCallback(req: Request, res: Response, next: NextFunction): void {
+    const state = req.query.state as string;
+    if (!verifyOAuthState(state)) {
+      res.redirect(`${env.CLIENT_URL}/login?error=invalid_state`);
+      return;
+    }
+
+    passport.authenticate(
+      'google',
+      {
+        session: false,
+        failureRedirect: `${env.CLIENT_URL}/login?error=google_auth_failed`,
+      },
+      (err: Error | null, user: { id: string; email: string } | undefined) => {
+        if (err) {
+          console.error('[Google Callback] Auth error:', err);
+          return res.redirect(`${env.CLIENT_URL}/login?error=google_auth_failed`);
+        }
+        if (!user) {
+          console.error('[Google Callback] No user returned');
+          return res.redirect(`${env.CLIENT_URL}/login?error=google_auth_failed`);
+        }
+
+        console.log('[Google Callback] Generating tokens for user:', user.id);
+        const tokens = authService.generateOAuthTokens(user);
+
+        res.cookie('accessToken', tokens.accessToken, {
+          ...COOKIE_OPTIONS,
+          maxAge: COOKIE_MAX_AGE.ACCESS_TOKEN,
+        });
+        res.cookie('refreshToken', tokens.refreshToken, {
+          ...COOKIE_OPTIONS,
+          maxAge: COOKIE_MAX_AGE.REFRESH_TOKEN,
+        });
+
+        res.redirect(`${env.CLIENT_URL}/dashboard`);
+      }
+    )(req, res, next);
+  }
+
+  /**
+   * GET /api/auth/github
+   * Initiate GitHub OAuth flow
+   */
+  githubAuth(req: Request, res: Response, next: NextFunction): void {
+    const state = generateOAuthState();
+    passport.authenticate('github', {
+      scope: ['user:email'],
+      state,
+      session: false,
+    })(req, res, next);
+  }
+
+  /**
+   * GET /api/auth/github/callback
+   * Handle GitHub OAuth callback
+   */
+  githubCallback(req: Request, res: Response, next: NextFunction): void {
+    const state = req.query.state as string;
+    if (!verifyOAuthState(state)) {
+      res.redirect(`${env.CLIENT_URL}/login?error=invalid_state`);
+      return;
+    }
+
+    passport.authenticate(
+      'github',
+      {
+        session: false,
+        failureRedirect: `${env.CLIENT_URL}/login?error=github_auth_failed`,
+      },
+      (err: Error | null, user: { id: string; email: string } | undefined) => {
+        if (err) {
+          console.error('[GitHub Callback] Auth error:', err);
+          return res.redirect(`${env.CLIENT_URL}/login?error=github_auth_failed`);
+        }
+        if (!user) {
+          console.error('[GitHub Callback] No user returned');
+          return res.redirect(`${env.CLIENT_URL}/login?error=github_auth_failed`);
+        }
+
+        console.log('[GitHub Callback] Generating tokens for user:', user.id);
+        const tokens = authService.generateOAuthTokens(user);
+
+        res.cookie('accessToken', tokens.accessToken, {
+          ...COOKIE_OPTIONS,
+          maxAge: COOKIE_MAX_AGE.ACCESS_TOKEN,
+        });
+        res.cookie('refreshToken', tokens.refreshToken, {
+          ...COOKIE_OPTIONS,
+          maxAge: COOKIE_MAX_AGE.REFRESH_TOKEN,
+        });
+
+        res.redirect(`${env.CLIENT_URL}/dashboard`);
+      }
+    )(req, res, next);
   }
 }
 
